@@ -37,28 +37,17 @@ public class Grass extends Living
 		ArrayList<Living> neighborhood = new ArrayList<Living>();
 		neighborhood = this.plain.getNeighborhood(this.row, this.column);
 		
-		int grassCount = 0;
-		int rabbitCount = 0;
-		
-		// Get the count of foxes and badgers
-		for (int i = 0; i < neighborhood.size(); i++) {
-			if (neighborhood.get(i).who() == State.GRASS) {
-				grassCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.RABBIT) {
-				rabbitCount += 1;
-			}
-		}
+		int[] population = {0, 0, 0, 0, 0};
+		super.census(population);
 		
 		// Rule a - Return Empty if there are three times as many Rabbits as Grasses in the neighborhood
-		if (rabbitCount >= (3 * grassCount)) {
+		if (population[4] >= (3 * population[3])) {
 			Empty e = new Empty(pNew, this.row, this.column);
 			return(e);
 		}
 		
 		// Rule b - Return Rabbit if there are three or more Rabbits in the neighborhood
-		if (rabbitCount >= 3) {
+		if (population[4] >= 3) {
 			Rabbit r = new Rabbit(pNew, this.row, this.column, 0);
 			return(r);
 		}

@@ -51,51 +51,28 @@ public class Badger extends Animal
 	 */
 	public Living next(Plain pNew)
 	{
-		// Get the neighborhood
-		ArrayList<Living> neighborhood = new ArrayList<Living>();
-		neighborhood = this.plain.getNeighborhood(this.row, this.column);		
-		
 		// Rule a - Return Empty if Badger is 4 years old 
 		if (this.age == BADGER_MAX_AGE) {
 			Empty e = new Empty(pNew, this.row, this.column);
 			return(e);
 		}
 		
-		int badgerCount = 0;
-		int foxCount = 0;
-		int rabbitCount = 0;
-		
-		// Get the count of badgers and foxes
-		for (int i = 0; i < neighborhood.size(); i++) {
-			if (neighborhood.get(i).who() == State.BADGER) {
-				badgerCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.FOX) {
-				foxCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.RABBIT) {
-				rabbitCount += 1;
-			}
-		}
-		
+		int[] population = {0, 0, 0, 0, 0};
+		super.census(population);
+				
 		// Rule b = Return Fox if there is only one Badger in the neighborhood, but more than one Fox
-//		if (foxCount > badgerCount) {
-//			Fox f = new Fox(pNew, this.row, this.column, 0);
-//			return(f);
-//		}
-		if ((badgerCount == 1) && (foxCount > badgerCount)) {
+		if ((population[0] == 1) && (population[2] > population[0])) {
 			Fox f = new Fox(pNew, this.row, this.column, 0);
-			return(f);
+			return(f);			
 		}
 		
 		
 		// Rule c = Return Empty if number of Badgers and Foxes together is greater than number of Rabbits (Hunger)
-		if ((foxCount + badgerCount) > rabbitCount) {
+		if ((population[2] + population[0]) > population[4]) {
 			Empty e = new Empty(pNew, this.row, this.column);
 			return(e);
 		}
+		
 		
 		// Rule d = Return older badger
 		Badger b = new Badger(pNew, this.row, this.column, this.age + 1);

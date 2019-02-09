@@ -1,5 +1,7 @@
 package edu.iastate.cs228.hw1;
 
+import java.util.ArrayList;
+
 /**
  *  
  * @author
@@ -44,7 +46,34 @@ public abstract class Living
 		// 
 		// Count the numbers of Badgers, Empties, Foxes, Grasses, and Rabbits  
 		// in the 3x3 neighborhood centered at this Living object.  Store the 
-		// counts in the array population[] at indices 0, 1, 2, 3, 4, respectively. 
+		// counts in the array population[] at indices 0, 1, 2, 3, 4, respectively.
+		// Get the neighborhood
+		ArrayList<Living> neighborhood = new ArrayList<Living>();
+		neighborhood = this.plain.getNeighborhood(this.row, this.column);	
+		
+		// Get the count of badgers and foxes
+		for (int i = 0; i < neighborhood.size(); i++) {
+			if (neighborhood.get(i).who() == State.BADGER) {
+				population[0] += 1;
+			}
+			
+			if (neighborhood.get(i).who() == State.EMPTY) {
+				population[1] += 1;
+			}
+			
+			if (neighborhood.get(i).who() == State.FOX) {
+				population[2] += 1;
+			}
+			
+			if (neighborhood.get(i).who() == State.GRASS) {
+				population[3] += 1;
+			}
+			
+			if (neighborhood.get(i).who() == State.RABBIT) {
+				population[4] += 1;
+			}
+		}
+		
 	}
 
 	/**

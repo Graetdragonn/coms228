@@ -34,55 +34,29 @@ public class Empty extends Living
 	 */
 	public Living next(Plain pNew)
 	{
-		// Get the neighborhood
-		ArrayList<Living> neighborhood = new ArrayList<Living>();
-		neighborhood = this.plain.getNeighborhood(this.row, this.column);
-		
-		
-		int rabbitCount = 0;
-		int foxCount = 0;
-		int badgerCount = 0;
-		int grassCount = 0;
-		
-		// Get the counts
-		for (int i = 0; i < neighborhood.size(); i++) {
-			if (neighborhood.get(i).who() == State.BADGER) {
-				badgerCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.FOX) {
-				foxCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.RABBIT) {
-				rabbitCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.GRASS) {
-				grassCount += 1;
-			}
-		}
+		int[] population = {0, 0, 0, 0, 0};
+		super.census(population);
 		
 		// Rule a - Return Rabbit if more than one neighboring Rabbit
-		if (rabbitCount > 1) {
+		if (population[4] > 1) {
 			Rabbit r = new Rabbit(pNew, this.row, this.column, 0);
 			return(r);
 		}
 		
 		// Rule b - Return Fox if more than one neighboring Fox
-		if (foxCount > 1) {
+		if (population[2] > 1) {
 			Fox f = new Fox(pNew, this.row, this.column, 0);
 			return(f);
 		}
 		
 		// Rule c - Return Badger if more than one neighboring Badger
-		if (badgerCount > 1) {
+		if (population[0] > 1) {
 			Badger b = new Badger(pNew, this.row, this.column, 0);
 			return(b);
 		}
 		
 		// Rule d - Return Grass if at least one neighboring Grass
-		if (grassCount >= 1) {
+		if (population[3] >= 1) {
 			Grass g = new Grass(pNew, this.row, this.column);
 			return(g);
 		}

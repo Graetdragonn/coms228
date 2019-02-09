@@ -51,38 +51,18 @@ public class Fox extends Animal
 			return(e);
 		}
 		
-		// Get the neighborhood
-		ArrayList<Living> neighborhood = new ArrayList<Living>();
-		neighborhood = this.plain.getNeighborhood(this.row, this.column);
-		
-		int foxCount = 0;
-		int badgerCount = 0;
-		int rabbitCount = 0;
-		
-		// Get the count of foxes and badgers
-		for (int i = 0; i < neighborhood.size(); i++) {
-			if (neighborhood.get(i).who() == State.BADGER) {
-				badgerCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.FOX) {
-				foxCount += 1;
-			}
-			
-			if (neighborhood.get(i).who() == State.RABBIT) {
-				rabbitCount += 1;
-			}
-		}
+		int[] population = {0, 0, 0, 0, 0};
+		super.census(population);
 		
 		
 		// Rule b = Return Badger if there are more Badgers than Foxes
-		if (badgerCount > foxCount) {
+		if (population[0] > population[2]) {
 			Badger b = new Badger(pNew, this.row, this.column, 0);
 			return(b);
 		}
 		
 		// Rule c = Return Empty if number of Badgers and Foxes together is greater than number of Rabbits (Hunger)
-		if ((foxCount + badgerCount) > rabbitCount) {
+		if ((population[0] + population[2]) > population[4]) {
 			Empty e = new Empty(pNew, this.row, this.column);
 			return(e);
 		}
