@@ -1,17 +1,15 @@
-package edu.iastate.cs228.hw1.test;
+package edu.iastate.cs228.hw1;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import edu.iastate.cs228.hw1.Badger;
-import edu.iastate.cs228.hw1.Empty;
-import edu.iastate.cs228.hw1.Fox;
-import edu.iastate.cs228.hw1.Grass;
-import edu.iastate.cs228.hw1.Living;
-import edu.iastate.cs228.hw1.Plain;
-import edu.iastate.cs228.hw1.Rabbit;
-import edu.iastate.cs228.hw1.State;
+/**
+ *  
+ * @author Brian Bates
+ *
+ */
+
 
 class GrassTest {
 

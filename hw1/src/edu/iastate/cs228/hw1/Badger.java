@@ -1,7 +1,5 @@
 package edu.iastate.cs228.hw1;
 
-import java.util.ArrayList;
-
 /**
  *  
  * @author Brian Bates
@@ -33,7 +31,6 @@ public class Badger extends Animal
 	 */
 	public State who()
 	{
-		// TODO 
 		return State.BADGER; 
 	}
 	

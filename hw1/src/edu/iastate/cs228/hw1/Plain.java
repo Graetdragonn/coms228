@@ -8,6 +8,13 @@ import java.util.Random;
 import java.util.Scanner; 
 
 /**
+ *  
+ * @author Brian Bates
+ *
+ */
+
+
+/**
  * 
  * The plain is represented as a square grid of size width x width. 
  *
@@ -103,15 +110,16 @@ public class Plain
 	 */
 	public Plain(int w)
 	{
-		// TODO 
 		width = w;
 		grid = new Living[w][w];
 	}
 	
-	
+	/**
+	 * Return the width of the grid.  Since the grid is a square, this represents the number of rows and columns.
+	 * @return the width of the grid.
+	 */
 	public int getWidth()
 	{
-		// TODO  
 		return width;   
 	}
 	
@@ -133,7 +141,7 @@ public class Plain
 				
 				if (g == 0) {
 					// Badger
-					Badger badger = new Badger(this, i, j, generator.nextInt(Living.BADGER_MAX_AGE));
+					Badger badger = new Badger(this, i, j, 0);
 					grid[i][j] = badger;
 				} else if (g == 1) {
 					// Empty
@@ -141,7 +149,7 @@ public class Plain
 					grid[i][j] = empty;
 				} else if (g == 2) {
 					// Fox
-					Fox fox = new Fox(this, i, j, generator.nextInt(Living.FOX_MAX_AGE));
+					Fox fox = new Fox(this, i, j, 0);
 					grid[i][j] = fox;
 				} else if (g == 3) {
 					// Grass
@@ -149,7 +157,7 @@ public class Plain
 					grid[i][j] = grass;
 				} else {
 					// Rabbit
-					Rabbit rabbit = new Rabbit(this, i, j, generator.nextInt(Living.RABBIT_MAX_AGE));
+					Rabbit rabbit = new Rabbit(this, i, j, 0);
 					grid[i][j] = rabbit;
 				}
 			}
@@ -165,7 +173,6 @@ public class Plain
 	 */
 	public String toString()
 	{
-		// TODO
 		String returnString = "";
 		
 		for (int i = 0; i < width; i++) {
@@ -179,7 +186,6 @@ public class Plain
 				}
 				
 				if (l.who() == State.EMPTY) {
-					Empty e = (Empty) l;
 					returnString = returnString + "E  ";
 				}
 				
@@ -189,7 +195,6 @@ public class Plain
 				}
 				
 				if (l.who() == State.GRASS) {
-					Grass g = (Grass) l;
 					returnString = returnString + "G  ";
 				}
 				
@@ -240,15 +245,6 @@ public class Plain
 	 */
 	public void write(String outputFileName) throws FileNotFoundException
 	{
-		// TODO 
-		// 
-		// 1. Open the file. 
-		// 
-		// 2. Write to the file. The five life forms are represented by characters 
-		//    B, E, F, G, R. Leave one blank space in between. Examples are given in
-		//    the project description. 
-		// 
-		// 3. Close the file. 
 		PrintWriter out = new PrintWriter(outputFileName);
 		
 		out.println(this.toString());

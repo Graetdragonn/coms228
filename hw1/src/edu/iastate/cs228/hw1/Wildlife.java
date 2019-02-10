@@ -1,8 +1,6 @@
 package edu.iastate.cs228.hw1;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Scanner; 
 
 /**
@@ -35,35 +33,9 @@ public class Wildlife
 	 */
 	public static void main(String[] args) throws FileNotFoundException
 	{	
-		// TODO 
-		// 
-		// Generate wildlife simulations repeatedly like shown in the 
-		// sample run in the project description. 
-		//
-		// 2. Print out standard messages as given in the project description. 
-		// 
-		// 3. For convenience, you may define two plains even and odd as below. 
-		//    In an even numbered cycle (starting at zero), generate the plain 
-		//    odd from the plain even; in an odd numbered cycle, generate even 
-		//    from odd. 
 		
 		Plain even;   				 // the plain after an even number of cycles 
 		Plain odd;                   // the plain after an odd number of cycles
-		
-		// 4. Print out initial and final plains only.  No intermediate plains should
-		//    appear in the standard output.  (When debugging your program, you can 
-		//    print intermediate plains.)
-		// 
-		// 5. You may save some randomly generated plains as your own test cases. 
-		// 
-		// 6. It is not necessary to handle file input & output exceptions for this 
-		//    project. Assume data in an input file to be correctly formated.
-		
-		// 1. Getting user input to 1) generate a random plain, 2 to read a plain from an input
-		//    file, and 3 to end the simulation. (An input file always ends with 
-		//    the suffix .txt.)
-		
-		
 		
 		System.out.println("Simulation of Wildlife of the Plain");
 		System.out.println("keys: 1 (random plain), 2 (file input), 3 (exit)");
@@ -73,6 +45,7 @@ public class Wildlife
 			// Begin a new trial by getting the user's choice
 			int choice = getTrialChoice();			
 			
+			// Check if user wants to exit, otherwise, run simulation program.
 			if ((choice != 1) && (choice != 2)) {
 				System.exit(0);
 			} else {
@@ -98,6 +71,8 @@ public class Wildlife
 					
 					even = new Plain(console.next());
 					odd = new Plain(even.getWidth());
+					
+					console.close();
 				}
 				
 				// Get the number of cycles to run
@@ -150,6 +125,8 @@ public class Wildlife
 		// Wait for user input and check for validity
 		System.out.print("Trial " + trialNumber + ": ");
 		return(in.nextInt());
+		
+		
 	}
 	
 	/**

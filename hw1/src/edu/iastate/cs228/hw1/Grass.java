@@ -1,10 +1,8 @@
 package edu.iastate.cs228.hw1;
 
-import java.util.ArrayList;
-
 /**
  *  
- * @author
+ * @author Brian Bates
  *
  */
 
@@ -16,7 +14,6 @@ public class Grass extends Living
 {
 	public Grass (Plain p, int r, int c) 
 	{
-		// TODO 
 		this.plain = p;
 		this.row = r;
 		this.column = c;
@@ -24,7 +21,6 @@ public class Grass extends Living
 	
 	public State who()
 	{
-		// TODO  
 		return State.GRASS; 
 	}
 	
@@ -33,10 +29,7 @@ public class Grass extends Living
 	 */
 	public Living next(Plain pNew)
 	{
-		// Get the neighborhood
-		ArrayList<Living> neighborhood = new ArrayList<Living>();
-		neighborhood = this.plain.getNeighborhood(this.row, this.column);
-		
+		// The the census of the neighborhood
 		int[] population = {0, 0, 0, 0, 0};
 		super.census(population);
 		

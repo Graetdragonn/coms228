@@ -1,7 +1,5 @@
 package edu.iastate.cs228.hw1;
 
-import java.util.ArrayList;
-
 /**
  *  
  * @author Brian Bates
@@ -24,7 +22,6 @@ public class Rabbit extends Animal
 	 */
 	public Rabbit (Plain p, int r, int c, int a) 
 	{
-		// TODO
 		this.plain = p;
 		this.row = r;
 		this.column = c;
@@ -34,7 +31,6 @@ public class Rabbit extends Animal
 	// Rabbit occupies the square.
 	public State who()
 	{
-		// TODO  
 		return State.RABBIT; 
 	}
 	

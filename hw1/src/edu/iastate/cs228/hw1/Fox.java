@@ -1,10 +1,8 @@
 package edu.iastate.cs228.hw1;
 
-import java.util.ArrayList;
-
 /**
  *  
- * @author
+ * @author Brian Bates
  *
  */
 
@@ -22,7 +20,6 @@ public class Fox extends Animal
 	 */
 	public Fox (Plain p, int r, int c, int a) 
 	{
-		// TODO 
 		this.plain = p;
 		this.row = r;
 		this.column = c;
@@ -34,7 +31,6 @@ public class Fox extends Animal
 	 */
 	public State who()
 	{
-		// TODO 
 		return State.FOX; 
 	}
 	

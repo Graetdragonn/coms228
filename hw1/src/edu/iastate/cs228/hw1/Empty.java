@@ -1,10 +1,8 @@
 package edu.iastate.cs228.hw1;
 
-import java.util.ArrayList;
-
 /**
  *  
- * @author
+ * @author Brian Bates
  *
  */
 
@@ -15,7 +13,6 @@ public class Empty extends Living
 {
 	public Empty (Plain p, int r, int c) 
 	{
-		// TODO  
 		this.plain = p;
 		this.row = r;
 		this.column = c;
@@ -23,7 +20,6 @@ public class Empty extends Living
 	
 	public State who()
 	{
-		// TODO 
 		return State.EMPTY; 
 	}
 	
