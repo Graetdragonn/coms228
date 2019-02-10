@@ -125,8 +125,7 @@ public class Plain
 	{
 		Random generator = new Random(); 
 		int g;
-		 
-		Living l;
+		
 		
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < width; j++) {
@@ -134,9 +133,7 @@ public class Plain
 				
 				if (g == 0) {
 					// Badger
-//					int a = generator.nextInt(l.BADGER_MAX_AGE);
-					
-					Badger badger = new Badger(this, i, j, 0);
+					Badger badger = new Badger(this, i, j, generator.nextInt(Living.BADGER_MAX_AGE));
 					grid[i][j] = badger;
 				} else if (g == 1) {
 					// Empty
@@ -144,7 +141,7 @@ public class Plain
 					grid[i][j] = empty;
 				} else if (g == 2) {
 					// Fox
-					Fox fox = new Fox(this, i, j, 0);
+					Fox fox = new Fox(this, i, j, generator.nextInt(Living.FOX_MAX_AGE));
 					grid[i][j] = fox;
 				} else if (g == 3) {
 					// Grass
@@ -152,7 +149,7 @@ public class Plain
 					grid[i][j] = grass;
 				} else {
 					// Rabbit
-					Rabbit rabbit = new Rabbit(this, i, j, 0);
+					Rabbit rabbit = new Rabbit(this, i, j, generator.nextInt(Living.RABBIT_MAX_AGE));
 					grid[i][j] = rabbit;
 				}
 			}

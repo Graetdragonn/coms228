@@ -1,14 +1,46 @@
 package edu.iastate.cs228.hw1.test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class AnimalTest {
+import edu.iastate.cs228.hw1.Badger;
+import edu.iastate.cs228.hw1.Fox;
+import edu.iastate.cs228.hw1.Plain;
+import edu.iastate.cs228.hw1.Rabbit;
 
+class AnimalTest {
+	Plain p = new Plain(4);
+	
+	/*
+	 * Test a Badger is created with the correct age.  Also tests that myAge() method is called.
+	 */
 	@Test
-	void test() {
-		fail("Not yet implemented");
+	void badgerAgeTest() {
+		Badger b = new Badger(p, 0, 0, 4);
+		
+		assertEquals(b.myAge(), 4, "New Badger object is not constructed with the correct age.");
 	}
+	
+	/*
+	 * Test a Fox is created with the correct age.  Also tests that myAge() method is called.
+	 */
+	@Test
+	void foxAgeTest() {
+		Fox f = new Fox(p, 0, 0, 4);
+		
+		assertEquals(f.myAge(), 4, "New Fox object is not constructed with the correct age.");
+	}
+	
+	/*
+	 * Test a Badger is created with the correct age.  Also tests that myAge() method is called.
+	 */
+	@Test
+	void rabbitAgeTest() {
+		Rabbit r = new Rabbit(p, 0, 0, 3);
+		
+		assertEquals(r.myAge(), 3, "New rabbit object is not constructed with the correct age.");
+	}
+	
 
 }

@@ -23,14 +23,7 @@ public class Badger extends Animal
 	public Badger (Plain p, int r, int c, int a) 
 	{
 		this.plain = p;
-		
-		// Check against the row exceeding the plain width
-		if (!(r > plain.getWidth())) {
-			this.row = r;
-		} else {
-			System.out.println("Assigned a row to an object that exceeds plain width.  Terminating.");
-			System.exit(0);
-		}
+		this.row = r;
 		this.column = c;
 		this.age = a;
 	}

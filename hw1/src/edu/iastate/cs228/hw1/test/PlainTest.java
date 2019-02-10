@@ -30,7 +30,6 @@ class PlainTest {
 		assertEquals(width, testPlain.getWidth(), "Plain is not the same width as constructor designated.");
 	}
 	
-	
 	/*
 	 * Confirm a newly constructed plain does not have a populated grid
 	 */
@@ -117,6 +116,14 @@ class PlainTest {
 		}
 	}
 
-	
+	/*
+	 * Test that the grid is a square with equal number of rows and columns
+	 */
+	@Test
+	public void squareGrid() {
+		testPlain = new Plain(width);
+		
+		assertEquals(testPlain.grid.length, testPlain.grid[0].length, "The plain grid was not constructed as a perfect square.");
+	}
 	
 }
