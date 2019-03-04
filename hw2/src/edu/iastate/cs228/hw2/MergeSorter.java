@@ -111,7 +111,8 @@ public class MergeSorter extends AbstractSorter
 		
 		int i = 0; int j = 0; int iter = 0;
 		while ((i < p) && (j < q)) {
-			if (B[i].compareTo(C[j]) <= 0) {
+//			if (B[i].compareTo(C[j]) <= 0) {
+			if (pointComparator.compare(B[i], C[j]) <= 0) {
 				D[iter++] = B[i];
 				i++;
 			} else {

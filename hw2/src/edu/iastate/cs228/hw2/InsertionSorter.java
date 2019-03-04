@@ -48,7 +48,8 @@ public class InsertionSorter extends AbstractSorter
 		for (int i = 1; i < n; i++) {
 			Point temp = points[i];
 			int j = i - 1;
-			while((j > -1) && (points[j].compareTo(temp) > 0)) {
+//			while((j > -1) && (points[j].compareTo(temp) > 0)) {
+			while((j > -1) && (pointComparator.compare(points[j], temp) > 0)) {
 				points[j + 1] = points[j];
 				j--;
 			}

@@ -114,17 +114,23 @@ public abstract class AbstractSorter
 		}
 		
 		//////// UNSURE OF THIS CODE ////////////////
-		if (order == 0) {
-			// Compare x-coords
-			Point.xORy = true;
-			
-		} else if (order == 1) {
-			// Compare y-coords
-			Point.xORy = false;
+		if (order == 0 || order == 1) {
+			if (order == 0) {
+				Point.xORy = true;
+			} else {
+				Point.xORy = false;
+			}
+
+			pointComparator = new Comparator<Point>() {
+				@Override
+				public int compare(Point p1, Point p2) {
+					// TODO Auto-generated method stub
+					return(p1.compareTo(p2));
+				}
+			};
 		} else {
 			// Polar angle comparison
 			pointComparator = new PolarAngleComparator(this.referencePoint);
-			
 		}
 		
 		

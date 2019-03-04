@@ -9,6 +9,7 @@ import java.io.File;
  */
 
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -62,6 +63,19 @@ public class RotationalPointScanner
 		
 		// Assign the correct algorithm
 		this.sortingAlgorithm = algo;
+		
+		// Assign the correct outputFileName
+		if (algo.equals(Algorithm.SelectionSort)) {
+			outputFileName = "select.txt";
+		} else if (algo.equals(Algorithm.InsertionSort)) {
+			outputFileName = "insert.txt";
+		} else if (algo.equals(Algorithm.MergeSort)) {
+			outputFileName = "merge.txt";
+		} else {
+			outputFileName = "quick.txt";
+		}
+		
+		System.out.println(outputFileName);
 	}
 
 	
@@ -177,12 +191,13 @@ public class RotationalPointScanner
 				
 				medianCoordinatePoint = new Point(x, y);
 				aSorter.setReferencePoint(medianCoordinatePoint);
-				System.out.println(aSorter.algorithm + " MCP: " + medianCoordinatePoint.toString());
+//				System.out.println(aSorter.algorithm + " MCP: " + medianCoordinatePoint.toString());
 			}
 			
 			// This special case when we need to sort by polar angle
-			if (i == 3) {
+			if (i == 2) {
 				aSorter.sort();
+//				System.out.println(Arrays.toString(aSorter.points));
 			}
 		}
 		
@@ -221,8 +236,13 @@ public class RotationalPointScanner
 	@Override
 	public String toString()
 	{
-		return null; 
-		// TODO
+		String returnString = "";
+		for (int i = 0; i < points.length; i++) {
+//			returnString.concat(points[i].toString() + "\n");
+			returnString = returnString + points[i].toString() + "\n";
+		}
+		
+		return(returnString);
 	}
 
 	
@@ -236,7 +256,15 @@ public class RotationalPointScanner
 	 */
 	public void writePointsToFile() throws FileNotFoundException
 	{
-		// TODO 
+		try {
+			System.out.println(this.outputFileName);
+			PrintWriter out = new PrintWriter(this.outputFileName);
+			
+			out.println(this.toString());
+			out.close();
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException();
+		}
 	}	
 
 	

@@ -86,7 +86,8 @@ public class QuickSorter extends AbstractSorter
 		int i = first - 1;
 		for (int j = first; j < last; j++) {
 			// Compare each Point to the partition Point
-			if (this.points[j].compareTo(partition) <= 0) {
+//			if (this.points[j].compareTo(partition) <= 0) {
+			if (pointComparator.compare(this.points[j], partition) <= 0) {
 				i++;
 				super.swap(i, j);
 			}

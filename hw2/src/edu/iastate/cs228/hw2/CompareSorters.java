@@ -101,16 +101,16 @@ public class CompareSorters
 				// Have every scanner call the scan() method
 				scanners[i].scan();
 				
+				// Optional write to file - which isn't working
+//				scanners[i].writePointsToFile();
+				
 				// Have every scanner call the draw() method //////////////////**********************///////////////(((********
 				//scanners[i].draw();
 			}
 			
 			
-			// After all four scans are done for the input, print out the statistics table (cf. Section 2). 
-			
-			
-			///////////////////////// THIS IS NOT RIGHT ANYMORE //////////////////////////////////////////
 			// Print the summary
+			System.out.println("");
 			System.out.printf("%-17s %-10s %-10s \n", "algorithm", "size", "time (ns)");
 			System.out.println("--------------------------------------");
 			

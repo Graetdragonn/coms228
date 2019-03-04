@@ -2,7 +2,8 @@ package edu.iastate.cs228.hw2;
 
 import java.io.FileNotFoundException;
 import java.lang.NumberFormatException; 
-import java.lang.IllegalArgumentException; 
+import java.lang.IllegalArgumentException;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 
 
@@ -50,7 +51,7 @@ public class SelectionSorter extends AbstractSorter
 			int minIndex = i;
 
 			for (int j = i + 1; j < this.points.length; j++) {
-				if (this.points[j].compareTo(this.points[minIndex]) < 0) {
+				if (pointComparator.compare(this.points[j], this.points[minIndex]) < 0) {
 					minIndex = j;
 				}
 			}
@@ -58,5 +59,7 @@ public class SelectionSorter extends AbstractSorter
 			// Swap them
 			super.swap(i, minIndex);
 		}
+		
+		
 	}	
 }

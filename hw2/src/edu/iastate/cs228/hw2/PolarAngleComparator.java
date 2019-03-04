@@ -41,12 +41,13 @@ public class PolarAngleComparator implements Comparator<Point>
 	public int compare(Point p1, Point p2)
 	{
 		// Check if they are the same point
-		if (p1.compareTo(p2) == 0) {
+		if (p1.equals(p2)) {
 			return 0;
 		}
 		
-		
-		
+		if (comparePolarAngle(p1, p2) < 0 || (comparePolarAngle(p1, p2) == 0 && compareDistance(p1, p2) < 0)) {
+			return -1;
+		}
 		
 		return 1; 
 	}
@@ -79,26 +80,26 @@ public class PolarAngleComparator implements Comparator<Point>
 	 */
     public int comparePolarAngle(Point p1, Point p2) 
     {
-    	if ((p1.compareTo(p2) == 0) || ((crossProduct(p1, p2) == 0) && dotProduct(p1, p2) > 0))  {
+    	if ((p1.equals(p2)) || ((p1.compareTo(referencePoint) != 0) && (p2.compareTo(referencePoint) != 0) && (crossProduct(p1, p2) == 0) && (dotProduct(p1, p2) > 0)))  {
     		return 0;
     	}
     	
-    	if (p1.compareTo(referencePoint) == 0) {
-    		return -1;
-    	} else {
-    		if ((p2.compareTo(referencePoint) != 0) && 
-    			((p1.getY() < referencePoint.getY()) && (p2.getY() < referencePoint.getY()) && (crossProduct(p1, p2) > 0)) ||
-    			((p1.getY() == referencePoint.getY()) &&
-    					(p2.getY() < referencePoint.getY()) ||
-    					((p2.getY() == referencePoint.getY()) && (p1.getX() > referencePoint.getX()) && (p2.getX() < referencePoint.getX())) ||
-    					((p2.getY() > referencePoint.getY()) && (p2.getX() > referencePoint.getX()))) ||
-    			((p1.getY() > referencePoint.getY()) &&
-    					((p2.getY() > referencePoint.getY()) && (crossProduct(p1, p2) > 0)) ||
-    					((p2.getY() == referencePoint.getY()) && (p2.getX() < referencePoint.getX())) ||
-    					(p2.getY() < referencePoint.getY()))) {
+    	if (p1.equals(referencePoint) ||
+    		(p2.compareTo(referencePoint) != 0 && 
+    			// 1
+    			((p1.getY() < referencePoint.getY() && p2.getY() < referencePoint.getY() && crossProduct(p1, p2) > 0) ||
+    			// 2
+    			(p1.getY() == referencePoint.getY() &&
+    					((p2.getY() < referencePoint.getY()) ||
+    					(p2.getY() == referencePoint.getY() && p1.getX() > referencePoint.getX() && p2.getX() < referencePoint.getX()) ||
+    					(p2.getY() > referencePoint.getY() && p2.getX() > referencePoint.getX()))) ||
+    			// 3
+    			(p1.getY() > referencePoint.getY() &&
+    					((p2.getY() > referencePoint.getY() && crossProduct(p1, p2) > 0) ||
+    					(p2.getY() == referencePoint.getY() && p2.getX() < referencePoint.getX()) ||
+    					(p2.getY() < referencePoint.getY())))))) {
     			
-    			return (-1);
-    		}
+   			return (-1);
     	}
     	
     	return 1;
@@ -147,13 +148,13 @@ public class PolarAngleComparator implements Comparator<Point>
     private int crossProduct(Point p1, Point p2)
     {
     	// TODO 
-    	int v1x = p1.getX() - referencePoint.getX();
-    	int v1y = p1.getY() - referencePoint.getY();
+    	int x1 = p1.getX() - referencePoint.getX();
+    	int y1 = p1.getY() - referencePoint.getY();
     	
-    	int v2x = p2.getX() - referencePoint.getX();
-    	int v2y = p2.getY() - referencePoint.getY();
+    	int x2 = p2.getX() - referencePoint.getX();
+    	int y2 = p2.getY() - referencePoint.getY();
     	
-    	return ((v1x * v2y) - (v2x * v1y));
+    	return ((x1 * y2) - (x2 * y1));
     }
 
     /**
