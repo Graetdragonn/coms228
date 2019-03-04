@@ -117,12 +117,13 @@ public abstract class AbstractSorter
 		if (order == 0) {
 			// Compare x-coords
 			Point.xORy = true;
+			
 		} else if (order == 1) {
 			// Compare y-coords
 			Point.xORy = false;
 		} else {
 			// Polar angle comparison
-//			pointComparator = new PolarAngleComparator(this.referencePoint);
+			pointComparator = new PolarAngleComparator(this.referencePoint);
 			
 		}
 		

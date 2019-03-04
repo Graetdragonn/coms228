@@ -167,6 +167,7 @@ public class RotationalPointScanner
 				aSorter.sort();
 			}
 			
+			// Get the median values to create the medianCoordinatePoint
 			if (i == 0) {
 				x = aSorter.getMedian().getX();
 			}
@@ -179,6 +180,7 @@ public class RotationalPointScanner
 				System.out.println(aSorter.algorithm + " MCP: " + medianCoordinatePoint.toString());
 			}
 			
+			// This special case when we need to sort by polar angle
 			if (i == 3) {
 				aSorter.sort();
 			}
