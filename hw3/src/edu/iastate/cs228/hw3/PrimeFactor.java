@@ -2,27 +2,37 @@ package edu.iastate.cs228.hw3;
 
 /**
  *  
- * @author
+ * @author Brian Bates
  *
  */
 
 public class PrimeFactor 
 {
-	public int prime; 		 // prime factor
-	public int multiplicity; // number of times the prime factor appears in a factorization
+	public int prime; 		 		// prime factor
+	public int multiplicity; 		// number of times the prime factor appears in a factorization
 
 	/**
 	 * Precondition: p is a prime number.  
 	 * 
 	 * @param p	 prime
 	 * @param m  multiplicity
-	 * @throws IllegalArgumentException if m < 1 
+	 * @throws IllegalArgumentException if m is less than 1 
 	 */
 	public PrimeFactor(int p, int m) throws IllegalArgumentException
 	{
-		// TODO 
+		// Throw exception if multiplicity is less than one
+		if (m < 1) {
+			throw new IllegalArgumentException();
+		}
+		
+		this.prime = p;
+		this.multiplicity = m;
+ 
 	}
 
+	/**
+	 * Make a clone of the prime factor
+	 */
 	@Override
 	public PrimeFactor clone() 
 	{
@@ -36,7 +46,10 @@ public class PrimeFactor
 	@Override
 	public String toString() 
 	{
-		// TODO 
-		return null; 
+		if (multiplicity == 1) {
+			return(Integer.toString(prime));
+		} else {
+			return(Integer.toString(prime) + "^" + Integer.toString(multiplicity));
+		}
 	}
 }
