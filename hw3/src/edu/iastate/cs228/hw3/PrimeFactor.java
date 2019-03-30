@@ -52,4 +52,19 @@ public class PrimeFactor
 			return(Integer.toString(prime) + "^" + Integer.toString(multiplicity));
 		}
 	}
+	
+	/**
+	 * Compare a PrimeFactor object with this one
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass())
+		{
+			return false;
+		}
+		
+		PrimeFactor pf = (PrimeFactor) obj;
+		return(pf.prime == this .prime && pf.multiplicity == this.multiplicity);
+		
+	}
 }

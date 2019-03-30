@@ -7,6 +7,9 @@ import edu.iastate.cs228.hw3.PrimeFactor;
 
 class PrimeFactorTest {
 
+	
+	
+	
 	/**
 	 * Test that the IllegalArgumentException is thrown for a multiplicity < 1
 	 * {@link PrimeFactor#PrimeFactor(int, int)}
