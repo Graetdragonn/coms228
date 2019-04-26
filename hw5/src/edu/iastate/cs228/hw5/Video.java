@@ -27,8 +27,7 @@ public class Video implements Comparable<Video>
 		
 		this.film = film;
 		this.numCopies = n;
-		this.numRentedCopies = 0;
-		
+		this.numRentedCopies = 0;		
 	}
 	
 	/**
@@ -151,13 +150,13 @@ public class Video implements Comparable<Video>
 		int v1Length = this.film.length();
 		int v2Length = vd.film.length();
 		
-		// TODO - add blank spaces to the end of the first film
+		// Add blank spaces to the end of the first film
 		if (v1Length < v2Length) {
 			int diff = v2Length - v1Length;
 			v1Title = addSpacesToFilm(v1Title, diff);
 		}
 		
-		// TODO - add blank spaces to the end of the second film
+		// Add blank spaces to the end of the second film
 		if (v1Length > v2Length) {
 			int diff = v1Length - v2Length;
 			v2Title = addSpacesToFilm(v2Title, diff);
@@ -171,10 +170,12 @@ public class Video implements Comparable<Video>
 			// First case, this film is alphabetically BEFORE compared film
 			if (v1Title.charAt(i) < v2Title.charAt(i)) {
 				returnValue = -1;
+				break;
 			} else if (v1Title.charAt(i) == v2Title.charAt(i)) {
 				returnValue = 0;
 			} else {
 				returnValue = 1;
+				break;
 			}
 		}
 		

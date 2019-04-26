@@ -19,18 +19,20 @@ class VideoTests {
 		Video v2 = new Video("Eagle Eye");
 		
 		assertEquals(1, v1.compareTo(v2));
-	}
 	
-	@Test
-	void comparison2() {
-		Video v1 = new Video("Eagle Eye");
-		Video v2 = new Video("War Games");
+		v1 = new Video("Eagle Eye");
+		v2 = new Video("War Games");
+		
+		assertEquals(-1, v1.compareTo(v2));
+		
+		v1 = new Video("Chappie");
+		v2 = new Video("Xandar");
 		
 		assertEquals(-1, v1.compareTo(v2));
 	}
 	
 	/**
-	 * Special case
+	 * Special cases
 	 */
 	@Test
 	void comparison3() {

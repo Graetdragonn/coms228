@@ -64,8 +64,6 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	public SplayTree(E data) 
 	{
-		// TODO - creates a tree root to store the given data.  Since this is the CONSTRUCTOR, there are no other Nodes
-		
 		// Add the element to the tree without splaying
 		addBST(data);
 	}
@@ -103,8 +101,8 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	public E getRoot()
 	{
-		// TODO 
-		return null; 
+		// TODO - test
+		return root.data; 
 	}
 	
 	
@@ -134,7 +132,8 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	
 	/**
 	 * Adds an element to the tree without splaying.  The method carries out a binary search tree
-	 * addition.  It is used for initializing a splay tree. 
+	 * addition.  It is used for initializing a splay tree. **Very important - it does not change the root so whatever
+	 * data was established as the root will remain the root (for operations like bulk add, etc.)
 	 * 
 	 * Calls link(). 
 	 * 
@@ -160,7 +159,7 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 		while (true) {
 			// Compare target data to the current Node's data
 			int comp = current.data.compareTo(data);
-			
+
 			// Case 1 - target data and current Node data are the same (already exists).  Do not add the new
 			//          data and return false (sets do not have dupliates)
 			if (comp == 0) {
@@ -442,7 +441,7 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	private void link(Node parent, Node child) 
 	{
-		
+		// TODO - some way to test?
 		child.parent = parent;
 		
 		// Make the comparison to determine if child should be left or right of parent
@@ -512,8 +511,7 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	
 	private String toStringRec(Node n, int depth)
 	{
-		// TODO - test
-		
+		// TODO - test		
 		String returnString = "";
 		
 		// Get the indentation spacing correct - 4 spaces * depth
@@ -523,7 +521,7 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 		
 		// If Node is null
 		if (n == null) {
-			returnString = returnString + "\n";
+			returnString = returnString + "null\n";
 			return returnString;
 		} 
 
@@ -535,7 +533,7 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 			returnString = returnString + toStringRec(n.left, depth+1);
 			returnString = returnString + toStringRec(n.right, depth+1);
 		}
-		
+
 		return(returnString);
 	}
 	

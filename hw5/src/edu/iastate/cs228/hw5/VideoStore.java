@@ -1,5 +1,6 @@
 package edu.iastate.cs228.hw5;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner; 
 
@@ -58,13 +59,32 @@ public class VideoStore
      */
     public void setUpInventory(String videoFile) throws FileNotFoundException
     {
-    	// TODO 
+    	Scanner read = new Scanner(new File(videoFile));
     	
+    	while(read.hasNextLine()) {
+    		String line = read.nextLine();
+    		
+    		if (!line.equals("\\n") && !line.equals("") && !line.equals("\\s+")) {
+	    		String title = parseFilmName(line);
+	    		
+	    		int copies = parseNumCopies(line);
+//	    		System.out.print(title + " (" + copies + ")");
+	    		
+	    		inventory.addBST(new Video(title, copies));
+    		}
+    	}
     	
+    	read.close();
     }
 	
-    
-    
+    /**
+     * Helper method to access inventory's private method toString()
+     */
+    @Override
+    public String toString() {
+    	// TODO - test
+    	return inventory.toString();
+    }
     
     
     // ------------------
@@ -94,7 +114,6 @@ public class VideoStore
 	 */
 	public void addVideo(String film)
 	{
-		// TODO - test 
 		addVideo(film, 1);
 	}
 
@@ -115,7 +134,8 @@ public class VideoStore
 	 */
 	public void addVideo(String film, int n)  
 	{
-		// TODO 
+		// FIXME - calling the addBST method here just for testing
+		inventory.addBST(new Video(film, n));
 	}
 	
 
@@ -337,24 +357,47 @@ public class VideoStore
 	 * Parse the film name from an input line. 
 	 * 
 	 * @param line
-	 * @return
+	 * @return the title of the video.
 	 */
 	public static String parseFilmName(String line) 
 	{
-		// TODO 
-		return null; 
+		String[] movie = line.split("\\s\\(");
+		String title = movie[0];
+		
+		// Extra - remove any blank lines or return characters at the end of the title, if they are present
+		title = title.replaceAll("\\s+$", "");
+		title = title.replaceAll("\n", "").replaceAll("\r", "");
+				
+		return title;
 	}
+	
+	
+	
+	// Split the movie into the title and number of copies if copies exists
 	
 	
 	/**
 	 * Parse the number of copies from an input line. 
 	 * 
 	 * @param line
-	 * @return
+	 * @return the number of copies in the title.  If no copies are listed, return 1.
+	 *         If the number of copies is listed as negative or zero, return 1.
 	 */
 	public static int parseNumCopies(String line) 
 	{
-		// TODO 
-		return 0; 
+		try {
+			String[] movie = line.split("\\s\\(");
+			String[] details = movie[1].split("\\)");
+			
+			int copies = Integer.parseInt(details[0]);
+			
+			// In case the number of copies is not positive
+			if (copies <= 0) {
+				copies = 1;
+			}
+			return copies;		
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return 1;
+		}
 	}
 }
