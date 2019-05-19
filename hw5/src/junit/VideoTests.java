@@ -32,6 +32,17 @@ class VideoTests {
 	}
 	
 	/**
+	 * Tests that video quantity is irrelevant
+	 */
+	@Test
+	void comparison2() {
+		Video v1 = new Video("War Games", 1);
+		Video v2 = new Video("War Games", 2);
+		
+		assertEquals(0, v1.compareTo(v2));
+	}
+	
+	/**
 	 * Special cases
 	 */
 	@Test
@@ -73,8 +84,8 @@ class VideoTests {
 	 */
 	@Test
 	void constructor2() {
-		Video v = new Video("Hackers");
-		assertEquals("Hackers", v.getFilm());
+		Video v = new Video("Wall-E");
+		assertEquals("Wall-E", v.getFilm());
 		assertEquals(1, v.getNumCopies());
 		assertEquals(1, v.getNumAvailableCopies());
 	}
@@ -223,6 +234,8 @@ class VideoTests {
 		assertEquals(0, v.getNumRentedCopies());
 		assertEquals(1, v.getNumAvailableCopies());
 	}
+	
+	
 	
 	/**
 	 * Basic test of output, no rental or return operations performed

@@ -2,6 +2,7 @@ package edu.iastate.cs228.hw5;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 import java.util.Scanner; 
 
 /**
@@ -49,27 +50,34 @@ public class VideoStore
     
     
    /**
-     * Accepts a video file to initialize the splay tree inventory.  To be efficient, 
-     * add videos to the inventory by calling the addBST() method, which does not splay. 
-     * 
-     * Refer to Section 3.2 for the format of video file. 
-     * 
-     * @param  videoFile  correctly formated if exists
-     * @throws FileNotFoundException 
-     */
+    * Sets up the initial inventory. 
+    * 
+    * Accepts a video file to initialize the splay tree inventory.  To be efficient, 
+    * add videos to the inventory by calling the addBST() method, which does not splay. 
+    * 
+    * Refer to Section 3.2 for the format of video file. 
+    * 
+    * @param  videoFile  correctly formated if exists
+    * @throws FileNotFoundException 
+    */
     public void setUpInventory(String videoFile) throws FileNotFoundException
     {
+    	inventory.clear();
+    	
     	Scanner read = new Scanner(new File(videoFile));
     	
     	while(read.hasNextLine()) {
     		String line = read.nextLine();
-    		
+    		// Catch empty lines
     		if (!line.equals("\\n") && !line.equals("") && !line.equals("\\s+")) {
-	    		String title = parseFilmName(line);
-	    		
+	    		String title = parseFilmName(line);	    		
 	    		int copies = parseNumCopies(line);
-//	    		System.out.print(title + " (" + copies + ")");
 	    		
+	    		if (copies <= 0) {
+	    			copies = 1;
+	    		}
+	    		
+	    		// Add the video to the inventory
 	    		inventory.addBST(new Video(title, copies));
     		}
     	}
@@ -78,11 +86,13 @@ public class VideoStore
     }
 	
     /**
-     * Helper method to access inventory's private method toString()
+     * Helper method to access inventory's private method toString() doing PREORDER traversal
+     * 
+     * @return the inventory formatted for the tree's toString() method.
+     *         null - if tree is empty
      */
     @Override
     public String toString() {
-    	// TODO - test
     	return inventory.toString();
     }
     
@@ -94,18 +104,28 @@ public class VideoStore
     /**
      * Find a Video object by film title. 
      * 
-     * @param film
-     * @return
+     * @param film  the title of the video to return
+     * @return video  if it exists
+     *         null   otherwise
      */
 	public Video findVideo(String film) 
 	{
-		// FIXME - this is just for testing, but it makes sense
-		inventory.contains(film);
+		if (film != null && !film.isEmpty()) {
+			// Find the Video based on film title
+			Video v = inventory.findElement(new Video(film));
+			
+			if (v != null && v.getFilm().equals(film)) {
+				return v;
+			}
+		}
 		
-		// TODO 
 		return null; 
 	}
 
+	
+	public String getRoot() {
+		return inventory.getRoot().getFilm();
+	}
 	
 	/**
 	 * Add one video copy of the film. 
@@ -114,7 +134,9 @@ public class VideoStore
 	 */
 	public void addVideo(String film)
 	{
-		addVideo(film, 1);
+		String title = parseFilmName(film);	    		
+		int copies = parseNumCopies(film);
+		addVideo(title, copies);
 	}
 
 	/**
@@ -134,14 +156,21 @@ public class VideoStore
 	 */
 	public void addVideo(String film, int n)  
 	{
-		// FIXME - calling the addBST method here just for testing
-		inventory.addBST(new Video(film, n));
+		if (film != null && !film.isEmpty()) {
+			// If the film wasn't in the inventory before, it is now
+			boolean added = inventory.add(new Video(film, n));
+			
+			// Update the number of copies
+			if (!added) {
+				inventory.root.data.addNumCopies(n);
+			}
+		}
 	}
 	
 
 
 	/**
-     * Update the splay trees inventory by adding videos.  Perform binary search additions by 
+     * UPDATE (vs setUpInventory) the splay trees inventory by adding videos.  Perform binary search additions by 
      * calling addBST() without splaying. 
      * 
      * The videoFile format is given in Section 3.2 of the project description. 
@@ -151,7 +180,23 @@ public class VideoStore
      */
     public void bulkImport(String videoFile) throws FileNotFoundException 
     {
-    	// TODO 
+    	// Create a new Scanner to read the video file
+    	Scanner read = new Scanner(new File(videoFile));
+    	
+    	while(read.hasNextLine()) {
+    		String line = read.nextLine();
+    		
+    		// Catch empty lines
+    		if (!line.equals("\\n") && !line.equals("") && !line.equals("\\s+")) {
+	    		String title = parseFilmName(line);	    		
+	    		int copies = parseNumCopies(line);
+	    		
+	    		// Add the video to the inventory or update qty if it already exists
+	    		inventory.addBST(new Video(title, copies));
+    		}
+    	}
+    	
+    	read.close();
     }
 
     
@@ -167,13 +212,20 @@ public class VideoStore
 	 */
 	public boolean available(String film)
 	{
-		// TODO 
-		return false; 
+		Video v = inventory.findElement(new Video(film));
+		
+		if (v != null && v.getFilm().equals(film) == true) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	
 	
 	/**
+	 * Rent an individual video
+	 * 
      * Update inventory. 
      * 
      * Search if the film is in inventory by calling findElement(new Video(film, 1)). 
@@ -196,10 +248,88 @@ public class VideoStore
 	public void videoRent(String film, int n) throws IllegalArgumentException, FilmNotInInventoryException,  
 									     			 AllCopiesRentedOutException 
 	{
-		// TODO 
+		String squashedFilm = "";
+		
+		if (film != null) {
+			// Remove all blank spaces to make sure the film is not empty
+			squashedFilm = film.replaceAll("\\s", "");
+		}
+		
+		if (n <= 0 || film == null || film.isEmpty() || squashedFilm.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		
+		// Find the video in inventory
+		Video v = inventory.findElement(new Video(film, 1));
+		
+		// Video is not in inventory
+		if (v == null) {
+			throw new FilmNotInInventoryException();
+		}
+		
+		int available = v.getNumAvailableCopies();
+		
+		// All copies are rented out
+		if (available == 0) {
+			throw new AllCopiesRentedOutException();
+		}
+		
+		if (n >= available) {
+			// Number of copies available is less that requested, but greater than zero
+			// Rent the remaining copies
+			v.rentCopies(available);
+		} else {
+			v.rentCopies(n);
+		}
+		
 	}
 
 	
+	/**
+	 * Update inventory.
+	 * 
+	 * If n exceeds the number of rented video copies, accepts up to that number of rented copies
+	 * while ignoring the extra copies. 
+	 * 
+	 * @param film
+	 * @param n
+	 * @throws IllegalArgumentException     if n <= 0 or film == null or film.isEmpty()
+	 * @throws FilmNotInInventoryException  if film is not in the inventory
+	 */
+	public void videoReturn(String film, int n) throws IllegalArgumentException, FilmNotInInventoryException 
+	{
+		String squashedFilm = "";
+		
+		if (film != null) {
+			// Remove all blank spaces to make sure the film is not empty
+			squashedFilm = film.replaceAll("\\s", "");
+		}
+		
+		if (n <= 0 || film == null || film.isEmpty() || squashedFilm.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		
+		// Find the film in inventory
+		Video v = inventory.findElement(new Video(film));
+		
+		// Film was not in inventory
+		if (v == null) {
+			throw new FilmNotInInventoryException();
+		}
+		
+		int copies = v.getNumRentedCopies();
+		
+		if (n > copies) {
+			// Returning too many copies (more copies than were checked out)
+			v.returnCopies(copies);
+		} else {
+			// Return n number of copies
+			v.returnCopies(n);
+		}
+	}
+	
+	
+
 	/**
 	 * Update inventory.
 	 * 
@@ -221,28 +351,72 @@ public class VideoStore
 	 * @throws FilmNotInInventoryException  if any film from the videoFile is not in the inventory 
 	 * @throws AllCopiesRentedOutException  if there is zero available copy for some film in videoFile
 	 */
+	@SuppressWarnings("resource")
 	public void bulkRent(String videoFile) throws FileNotFoundException, IllegalArgumentException, 
 												  FilmNotInInventoryException, AllCopiesRentedOutException 
 	{
-		// TODO 
-	}
+		Scanner read;
+		try {
+			read = new Scanner(new File(videoFile));
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException();
+		}
 
-	
-	/**
-	 * Update inventory.
-	 * 
-	 * If n exceeds the number of rented video copies, accepts up to that number of rented copies
-	 * while ignoring the extra copies. 
-	 * 
-	 * @param film
-	 * @param n
-	 * @throws IllegalArgumentException     if n <= 0 or film == null or film.isEmpty()
-	 * @throws FilmNotInInventoryException  if film is not in the inventory
-	 */
-	public void videoReturn(String film, int n) throws IllegalArgumentException, FilmNotInInventoryException 
-	{
-		// TODO
+		while(read.hasNextLine()) {
+			String line = read.nextLine();
+			
+			String error = "";
+			String msg = "";
+			
+			
+    		// Catch empty lines
+    		if (!line.equals("\\n") && !line.equals("") && !line.equals("\\s+")) {
+	    		String title = parseFilmName(line);	    		
+	    		int copies = parseNumCopies(line);
+	    		
+	    		// Number of copies is invalid
+	    		if (copies <= 0) {
+	    			error = "IllegalArgumentException";
+	    			msg = msg + "\nFilm " + title + " has an invalid request";
+	    		}
+	    		
+	    		Video v = inventory.findElement(new Video(title, 1));
+	    		
+	    		// Video not found
+	    		if (v == null) {
+	    			if (error.isEmpty()) {
+	    				error = "FilmNotInInventoryException";
+	    			}
+	    			msg = msg + "\nFilm " + title + " is not in inventory";
+	    		} else {
+	    			int available = v.getNumAvailableCopies();
+	    			
+	    			// All copies rented out
+	    			if (available == 0) {
+	    				if (error.isEmpty()) {
+	    					error = "AllCopiesRentedOutException";
+	    				}
+	    				msg = msg + "\nFilm " + title + " has been rented out";
+	    			}
+	    	    		
+	    	    	videoRent(title, copies);
+	    		}
+    		}
+    		
+    		if (!error.isEmpty()) {
+    			if (error.equals("IllegalArgumentException")) {
+    				throw new IllegalArgumentException(msg);
+    			} else if (error.equals("FilmNotInInventoryException")) {
+    				throw new FilmNotInInventoryException(msg);
+    			} else {
+    				throw new AllCopiesRentedOutException(msg);
+    			}
+    		}
+		}
+		
+		read.close();
 	}
+	
 	
 	
 	/**
@@ -259,7 +433,64 @@ public class VideoStore
 	public void bulkReturn(String videoFile) throws FileNotFoundException, IllegalArgumentException,
 													FilmNotInInventoryException												
 	{
-		// TODO 
+		Scanner read;
+		try {
+			read = new Scanner(new File(videoFile));
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException();
+		}
+
+		while(read.hasNextLine()) {
+			String line = read.nextLine();
+			
+			String error = "";
+			String msg = "";
+			
+			
+    		// Catch empty lines
+    		if (!line.equals("\\n") && !line.equals("") && !line.equals("\\s+")) {
+	    		String title = parseFilmName(line);	    		
+	    		int copies = parseNumCopies(line);
+	    		
+	    		// Number of copies is invalid
+	    		if (copies <= 0) {
+	    			error = "IllegalArgumentException";
+	    			msg = msg + "\nFilm " + title + " has an invalid request";
+	    		}
+	    		
+	    		Video v = inventory.findElement(new Video(title, 1));
+	    		
+	    		// Video not found
+	    		if (v == null) {
+	    			if (error.isEmpty()) {
+	    				error = "FilmNotInInventoryException";
+	    			}
+	    			msg = msg + "\nFilm " + title + " is not in inventory";
+	    		} else {
+	    			int available = v.getNumAvailableCopies();
+	    			
+	    			// All copies rented out
+	    			if (available == 0) {
+	    				if (error.isEmpty()) {
+	    					error = "AllCopiesRentedOutException";
+	    				}
+	    				msg = msg + "\nFilm " + title + " has been rented out";
+	    			}
+	    	    		
+	    	    	videoReturn(title, copies);
+	    		}
+    		}
+    		
+    		if (!error.isEmpty()) {
+    			if (error.equals("IllegalArgumentException")) {
+    				throw new IllegalArgumentException(msg);
+    			} else if (error.equals("FilmNotInInventoryException")) {
+    				throw new FilmNotInInventoryException(msg);
+    			} 
+    		}
+		}
+		
+		read.close();
 	}
 		
 	
@@ -272,6 +503,7 @@ public class VideoStore
 	 * Performs inorder traversal on the splay tree inventory to list all the videos by film 
 	 * title, whether rented or not.  Below is a sample string if printed out: 
 	 * 
+	 * Use the iterator
 	 * 
 	 * Films in inventory: 
 	 * 
@@ -285,12 +517,23 @@ public class VideoStore
 	 * The Godfather (1) 
 	 * 
 	 * 
-	 * @return
+	 * @return a string representing the videos in inventory with their total copies
 	 */
 	public String inventoryList()
 	{
-		// TODO 
-		return null; 
+		// Create the return string
+		String returnString = "Films in inventory:\n";
+		
+		// Create the iterator
+		Iterator<Video> iter = inventory.iterator();
+		
+		while (iter.hasNext()) {
+			Video v = iter.next();
+			
+			returnString = returnString + "\n" + v.getFilm() + " (" + v.getNumCopies() + ")";
+		}
+		
+		return returnString; 
 	}
 
 	
@@ -302,8 +545,7 @@ public class VideoStore
 	 */
 	public String transactionsSummary()
 	{
-		// TODO 
-		return null; 
+		return (rentedVideosList() + "\n\n" + unrentedVideosList());
 	}	
 	
 	/**
@@ -323,8 +565,24 @@ public class VideoStore
 	 */
 	private String rentedVideosList()
 	{
-		// TODO 
-		return null; 
+		String returnString = "Rented films:\n";
+		
+		// Create the inventory iterator
+		Iterator<Video> iter = inventory.iterator();
+		
+		// Perform inorder traversal
+		while(iter.hasNext()) {
+			// Get the video
+			Video v = iter.next();
+			int copiesRentedOut  = v.getNumRentedCopies();
+
+			// Determine if copies are rented out
+			if (copiesRentedOut != 0) {
+				returnString = returnString + "\n" + v.getFilm() + " (" + copiesRentedOut + ")";
+			}
+		}
+		
+		return returnString; 
 	}
 
 	
@@ -348,8 +606,24 @@ public class VideoStore
 	 */
 	private String unrentedVideosList()
 	{
-		// TODO 
-		return null; 
+		String returnString = "Films remaining in inventory:\n";
+		
+		// Create the inventory iterator
+		Iterator<Video> iter = inventory.iterator();
+		
+		// Perform inorder traversal
+		while(iter.hasNext()) {
+			// Get the video
+			Video v = iter.next();
+			int copiesAvailable  = v.getNumAvailableCopies();
+
+			// Determine if copies are rented out
+			if (copiesAvailable != 0) {
+				returnString = returnString + "\n" + v.getFilm() + " (" + copiesAvailable + ")";
+			}
+		}		
+		
+		return returnString;
 	}	
 
 	
@@ -361,7 +635,7 @@ public class VideoStore
 	 */
 	public static String parseFilmName(String line) 
 	{
-		String[] movie = line.split("\\s\\(");
+		String[] movie = line.split("\\s\\("); 
 		String title = movie[0];
 		
 		// Extra - remove any blank lines or return characters at the end of the title, if they are present
@@ -386,18 +660,17 @@ public class VideoStore
 	public static int parseNumCopies(String line) 
 	{
 		try {
-			String[] movie = line.split("\\s\\(");
-			String[] details = movie[1].split("\\)");
+			line = line.replaceAll("\\s+$", "");
+			line = line.replaceAll("\n", "").replaceAll("\r", "");
+			
+			String[] movie = line.split("\\s\\(");			
+			String[] details = movie[1].split("\\)$");
 			
 			int copies = Integer.parseInt(details[0]);
-			
-			// In case the number of copies is not positive
-			if (copies <= 0) {
-				copies = 1;
-			}
 			return copies;		
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return 1;
 		}
 	}
+	
 }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 
+
 /**
  * 
  * @author Brian Bates
@@ -77,7 +78,21 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	public SplayTree(SplayTree<E> tree)
 	{
-		// TODO 
+		if (tree != null && tree.size() != 0) {
+			// Clone the root Node
+			root = tree.root.clone();  
+			size++;
+			
+			// Copy the left subtree
+			if (root.left != null) {
+				root.left = cloneTreeRec(root.left);
+			}
+			
+			// Copy the right subtree
+			if (root.right != null) {
+				root.right = cloneTreeRec(root.right);
+			}
+		}
 	}
 
 	
@@ -89,8 +104,31 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	private Node cloneTreeRec(Node subTree) 
 	{
-		// TODO
-		return null; 
+		if (subTree != null) {  
+			// Clone the data in the node
+			Node n = subTree.clone();
+			
+			// If the original Node has a left child, recursively copy that tree as well
+			if (subTree.left != null) {
+				n.left = cloneTreeRec(subTree.left);
+			}
+			
+			// If the original Node has a right child, recursively copy that tree as well
+			if (subTree.right != null) {
+				n.right = cloneTreeRec(subTree.right);
+			}
+			
+			// Check the parent relationship
+			if (subTree.parent != null) {
+				n.parent = subTree.parent;
+			}
+			
+			size++;
+			
+			return n; 
+		} else {
+			return null;
+		}
 	}
 	
 	
@@ -101,9 +139,13 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	public E getRoot()
 	{
-		// TODO - test
-		return root.data; 
+		if (root != null) {
+			return root.data;
+		} else {
+			return null;
+		}
 	}
+	
 	
 	
 	/**
@@ -117,12 +159,20 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	
 	
 	/**
-	 * Clear the splay tree. 
+	 * Clear the splay tree.
+	 * 
+	 *  I think there are multiple ways to do this  
+	 *  		- instantiate a new SplayTree?
+	 *  		- delete root
 	 */
 	@Override
 	public void clear() 
 	{
-		// TODO 
+		// Delete root
+		root = null;
+		
+		// Reset size
+		size = 0;
 	}
 	
 	
@@ -143,6 +193,10 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	public boolean addBST(E data)
 	{
+		if (data == null) {
+			return false;
+		}
+		
 		if (root == null) {
 			// Root does not exist yet, create a new Node to hold the data and assign it to root
 			root = new Node(data);
@@ -214,7 +268,39 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	@Override 
 	public boolean add(E data)
 	{
-		// TODO 
+		if (data == null) {
+			return false;
+		}
+		
+		// If root is null (empty tree), set root equal to a new Node
+		// containing this data
+		if (root == null) {
+			root = new Node(data);
+			
+			size++;
+			
+			return true;
+		}
+		
+		// Find if the tree already contains the value
+		Node entry = findEntry(data);
+		
+		if (entry.data.compareTo(data) != 0) {
+			// If the data doesn't match, then findEntry returned the last Node on the search path.
+			// This node becomes the parent of the new Node
+			Node newNode = new Node(data);
+			
+			// Link the two nodes together
+			link(entry, newNode);
+			
+			// Splay at the new Node
+			splay(newNode);
+			
+			size++;
+			
+			return true;
+		}
+		
 		return false; 
 	}
 	
@@ -232,15 +318,18 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 		// Find the Node containing "data" or the last Node in the search path
 		Node exists = findEntry(data);
 		
-		// TODO - Regardless if "exists" matches the data or not, you need to splay here
+		// Regardless if "exists" matches the data or not, you need to splay here
+		splay(exists);
 		
 		// If the target data matches the Node data, return true, otherwise return false
-		if (exists.data.equals(data)) {
+		if (exists != null && exists.data.equals(data)) {
 			return true;
 		} else {
 			return false; 
 		}
 	}
+	
+	
 	
 	
 	/**
@@ -250,6 +339,7 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	public void splay(E data) 
 	{
+		// This is done - don't change
 		contains(data);
 	}
 
@@ -267,8 +357,31 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	public boolean remove(E data)
 	{
-		// TODO 
-		return false; 
+		Node n = findEntry(data);
+		
+		if (n == null) {
+			return false;  
+		} 
+		
+		// The Node n matches the target data
+		if (n.data.compareTo(data) == 0) {
+			Node parent = null;
+			if (n != root) {
+				parent = n.parent;
+			}
+			
+			unlink(n);
+			
+			// Splay at the parent
+			splay(parent);
+			
+			return(true);
+		} else {
+			// Node n does not match target.  Splay at last element in the search path
+			splay(n);
+		}
+		
+		return false;
 	}
 
 
@@ -282,12 +395,24 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 * search path. 
 	 * 
 	 * @param  data
-	 * @return element such that element.compareTo(data) == 0
+	 * @return element such that element.compareTo(data) == 0 -or-
+	 *         null if element.compareTo(data) != 0
 	 */
 	public E findElement(E data) 
 	{
-		// TODO 
-		return null; 
+		// Find the Node containing the data, OR the last Node in the search
+		Node n = findEntry(data);
+		
+		if (n == null) {
+			return null;
+		} else if (n.data.compareTo(data) != 0) {
+			// Splay at the Node returned (regardless if it's the target Node or not)
+			splay(n);
+			return null;
+		} else {
+			splay(n);
+			return n.data;
+		}
 	}
 
 	
@@ -311,7 +436,7 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 		// Source: Examples > binarySearchTree > BSTSet.java
 		Node current = root;
 		
-		while (current != null) {
+		while (true) {
 			// Compare the current Node's data to the target data.
 			// For Video, this compares the titles by alphabetical order
 			int comp = current.data.compareTo(data);
@@ -321,17 +446,24 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 				return current;
 			} else if (comp > 0) {
 				// The current Node Video title is alphabetically HIGHER than
-				// the target video.  Continue to the left child
-				current = current.left;
+				// the target video.  If there is a left-child, continue to the left child
+				if (current.left != null) {
+					current = current.left;
+				} else {
+					// No left child, return last searched Node
+					return current;
+				}
 			} else {
 				// The current Node Video title is alphabetically LOWER than
-				// the target video.  Continue to the left child
-				current = current.right;
+				// the target video.  If a right-child exists, continue to the right child
+				if (current.right != null) {
+					current = current.right;
+				} else {
+					// No right child, return last searched Node
+					return current;
+				}
 			}
 		}
-		
-		// If a match is never found, return the last Node in the search path
-		return current;		
 	}
 	
 	
@@ -350,8 +482,40 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	protected Node join(Node root1, Node root2)
 	{
-		// TODO
-		return null; 
+		if (root1 == null && root2 != null) {
+			return root2;
+		}
+		
+		if (root1 != null && root2 == null) {
+			return root1;
+		}
+		
+		if (root1 == null && root2 == null) {
+			return null;
+		}
+		
+		// Access the largest Node in T1.  Start with root1
+		Node largest = root1;
+		
+		// First get the largest value
+		while(largest.right != null) {
+			largest = largest.right;
+		}
+		
+		// Splay it back to root  **If root1 does not have children, you are assigning itself as its parent.  No bueno.
+		if (largest != root1) {
+			root1.parent = largest;
+			largest.left = root1;
+			
+			// Remove the original
+			largest.parent.right = null;
+			largest.parent = null;
+		}
+				
+		// Join tree root2 to root1 as the right child
+		largest.right = root2;
+		
+		return largest;
 	}
 
 	
@@ -363,7 +527,26 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	protected void splay(Node current)
 	{
-		// TODO
+		
+		if (current != null) {
+			if (root != null) {
+				// Splay if current is not the root
+				while (current != root) {
+					// Zig - parent of current is root
+					if (current.parent == root) {
+						zig(current);
+					} else if ((current == current.parent.left && current.parent == current.parent.parent.left) ||
+						 (current == current.parent.right && current.parent == current.parent.parent.right)) {
+						// Ziz-Zig - both current and its parent need to be left or right children
+						zigZig(current);
+					} else if ((current == current.parent.left && current.parent == current.parent.parent.right) ||
+						(current == current.parent.right && current.parent == current.parent.parent.left)) {
+						// Zig-Zag
+						zigZag(current);
+					}
+				}
+			}
+		}
 	}
 	
 
@@ -375,7 +558,19 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	protected void zig(Node current)
     {
-		// TODO
+		// Double check parental status
+		if (current != root) {
+			if (current.parent == root) {
+				// Current is the left-child of the root
+				if (root.left != null && root.left == current) {
+					rightRotate(current);
+				} else {
+					// Current is the right-child of the parent
+					leftRotate(current);
+				}
+//				root = current;
+			}
+		}
 	}
 
 	
@@ -387,7 +582,15 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	protected void zigZig(Node current)
 	{
-		// TODO
+		if (current.parent != root) {
+			if (current == current.parent.left && current.parent == current.parent.parent.left) {
+				rightRotate(current.parent);
+				rightRotate(current);
+			} else if (current == current.parent.right && current.parent == current.parent.parent.right) {
+				leftRotate(current.parent);
+				leftRotate(current);
+			}
+		}
 	}
 
 	
@@ -399,7 +602,15 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	protected void zigZag(Node current)
 	{
-		// TODO
+		if (current.parent != root) {
+			if (current == current.parent.left && current.parent == current.parent.parent.right) {
+				rightRotate(current);
+				leftRotate(current);
+			} else if (current == current.parent.right && current.parent == current.parent.parent.left) {
+				leftRotate(current);
+				rightRotate(current);
+			}
+		}
 	}	
 	
 	
@@ -413,7 +624,24 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	private void leftRotate(Node current)
 	{
+		// Get the parent Node of current
+		Node oldParent = current.parent;
 		
+		if (current.left != null) {
+			// If current has a left child, assign it as it's parent right child
+			oldParent.right = current.left;
+			current.left.parent = oldParent;
+		} else {
+			oldParent.right = null;
+		}
+		
+		// Set the original parent to the parent of current
+		if (oldParent != root) {
+			link(oldParent.parent, current);
+		}
+		
+		// Update parent-child relationship
+		link(current, oldParent);
 	}
 
 	
@@ -427,7 +655,23 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	private void rightRotate(Node current)
 	{
+		// Get the parent Node of current
+		Node oldParent = current.parent;
 		
+		if (current.right != null) {
+			// If the Node to splay has a right child, assign it as the parent's left child
+			oldParent.left = current.right;
+			current.right.parent = oldParent;
+		} else {
+			oldParent.left = null;
+		}
+
+		if (oldParent != root) {
+			link(oldParent.parent, current);
+		}
+		
+		// Update parent-child relationship
+		link(current, oldParent);
 	}	
 	
 	
@@ -441,16 +685,27 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	private void link(Node parent, Node child) 
 	{
-		// TODO - some way to test?
-		child.parent = parent;
-		
-		// Make the comparison to determine if child should be left or right of parent
-		int comp = parent.data.compareTo(child.data);
-		
-		if (comp < 0) {
-			parent.right = child;
-		} else {
-			parent.left = child;
+		if (child != null) {
+			// Set the new child's parent equal to the new parent
+			child.parent = parent;
+			
+			// Make the comparison to determine if child should be left or right of parent
+			int comp = parent.data.compareTo(child.data);
+			
+			if (comp < 0) {
+				parent.right = child;
+			} else {
+				parent.left = child;
+			}
+			
+			if (child == root) {
+				// Assign the new parent to root
+//				root.data = parent.data;
+				root = parent;
+				
+				// The new root has no parent
+				parent.parent = null;
+			}
 		}
 	}
 	
@@ -465,19 +720,97 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 */
 	private void unlink(Node n) 
 	{
-		// TODO 
+		if (n != null) {
+			if (n == root) {
+				// Case 1 - Unlink root
+				Node joined = join(root.left, root.right);
+				
+				if (joined == null) {
+					root.data = null;
+					root = null;
+				} else {
+					root.data = joined.data;
+					root = joined;
+				}
+			} else if (n.left == null && n.right == null) {
+				// Case 2 - Unlink a leaf			
+				if (n == n.parent.left) {
+					n.parent.left = null;
+				} else {
+					n.parent.right = null;
+				}
+				
+				n.parent = null;
+			} else {
+				// Case 3 - Node has at least one subtree
+				Node parent = n.parent;
+				Node joined = join(n.left, n.right);  
+				
+				n.data = joined.data;
+				n = joined;
+			
+				link(parent, joined);
+			}
+			
+			// Lastly, update size
+			size--;
+		}
 	}
 	
 	
 	/**
-	 * Perform BST removal of a node. 
+	 * Perform BST removal of a node. No splaying.
 	 * 
 	 * Called by the iterator method remove(). 
 	 * @param n
 	 */
 	private void unlinkBST(Node n)
 	{
-		// TODO 
+		// TODO - test to catch the Exception
+		// First check the call is not an illegalargument.  Why isn't this required to be thrown?
+		if (n != null) {
+			
+			// If n has two children
+			if (n.left != null && n.right != null) {
+				// Get the successor of Node n
+				Node s = successor(n);
+				
+				// Assign the successor data to n
+				n.data = s.data;
+				
+				// Point n to its successor (deleting n)
+				n = s;
+			}
+			
+			// Now n has at most one child, so we delete n and 
+			// replace it with the child (or possibly null)
+			
+			// First figure out whether the replacement node
+			// should be the left child, right child or null
+			Node replacement = null;
+			
+			if (n.left != null) {
+				replacement = n.left;
+			} else if (n.right != null) {
+				replacement = n.right;
+			}
+			
+			if (n == root) {
+				root = replacement;
+			} else {
+				if (n == n.parent.left) {
+					n.parent.left = replacement;
+				} else {
+					n.parent.right = replacement;
+				}
+			}
+			
+			if (replacement != null) {
+				replacement.parent = n.parent;
+			}
+			
+			size--;
+		}
 	}
 	
 	
@@ -485,12 +818,36 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	 * Called by unlink() and the iterator method next(). 
 	 * 
 	 * @param n
-	 * @return successor of n 
+	 * @return successor of n or null if no successor
 	 */
 	private Node successor(Node n) 
 	{
-		// TODO 
-		return null; 
+		if (n == null) {
+			return null;
+	    } else if (n.right != null) {
+	    	// leftmost entry in right subtree
+	    	Node current = n.right;
+	    	
+	    	// Get the leftmost element from the right subtree
+	    	while (current.left != null) {
+	    		current = current.left;
+	    	}
+	    	
+	    	return current;
+	    } else {
+	    	// we need to go up the tree to the closest ancestor that is
+	    	// a left child; its parent must be the successor
+	    	Node current = n.parent;
+	    	Node child = n;
+	    	
+	    	while (current != null && current.right == child) {
+	    		child = current;
+	    		current = current.parent;
+	    	}
+	      
+	    	// either current is null, or child is left child of current
+	    	return current;
+	    }
 	}
 
 	
@@ -504,15 +861,24 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	@Override 
 	public String toString()
 	{
-		// TODO - test 
 		return(toStringRec(root, 0));
 	}
 
 	
+	/** 
+	 * Recursively builds a string output
+	 * @param n
+	 * @param depth
+	 * @return
+	 */
 	private String toStringRec(Node n, int depth)
 	{
-		// TODO - test		
 		String returnString = "";
+		
+		// Places a newline character at the start of each line
+		if (depth > 0) {
+			returnString = returnString + "\n";
+		}
 		
 		// Get the indentation spacing correct - 4 spaces * depth
 		for (int i = 0; i < depth; i++) {
@@ -521,12 +887,12 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 		
 		// If Node is null
 		if (n == null) {
-			returnString = returnString + "null\n";
+			returnString = returnString + "null";
 			return returnString;
 		} 
 
 		// Add this Node's data
-		returnString = returnString + n.data.toString() + "\n";
+		returnString = returnString + n.data.toString();
 		
 		// Check for children
 		if (n.left != null || n.right != null) {
@@ -538,7 +904,9 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	}
 	
 	
-	
+	/**
+	 * Calls the private method to create the iterator
+	 */
 	@Override
 	public Iterator<E> iterator()
 	{
@@ -556,32 +924,56 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	   */
 	private class SplayTreeIterator implements Iterator<E>
 	{
+		// Node to be returned by the next call to next()
 		Node cursor;
+		
+		// Node returned by the last call to next() and available for removal.  This field is
+		// null when no node is available for removal
 		Node pending; 
 
 	    public SplayTreeIterator()
 	    {
-	    	// TODO
+	    	cursor = root;
+	    	
+	    	// Start at the smallest value in the tree
+	    	if (cursor != null) {
+	    		// Non-empty tree
+	    		while (cursor.left != null) {
+	    			cursor = cursor.left;
+	    		}
+	    	}
 	    }
 	    
+	    /**
+	     * If the cursor is not null, it is the next Node to be returned by the call to next()
+	     */
 	    @Override
 	    public boolean hasNext()
 	    {
-	    	// TODO
-	    	return true; 
+	    	return cursor != null;
 	    }
 
+	    
 	    @Override
 	    public E next()
 	    {
-	    	// TODO
-	    	return null; 
+	    	// TODO - test.  Is this correct to throw this exception?
+	    	// Calling next() on a cursor that is null throws this exception
+	    	if (!hasNext()) throw new NoSuchElementException(); 
+	    	
+	    	// Set cursor to pending (the last object to be returned)
+	    	pending = cursor;
+	    	
+	    	// Set the cursor to point to the next successor of the last cursor
+	    	cursor = successor(cursor);
+	    	
+	    	// Return the data
+	    	return pending.data;
 	    }
 
 	    /**
 	     * This method will join the left and right subtrees of the node being removed.  
 	     * It behaves like the class method remove(E data) after the node storing data is found.  
-	     * Place the cursor at the parent (or the new root if removed node was the root).
 	     * 
 	     * Calls unlinkBST(). 
 	     * 
@@ -589,7 +981,25 @@ public class SplayTree<E extends Comparable<? super E>> extends AbstractSet<E>
 	    @Override
 	    public void remove()
 	    {
-	      // TODO
+	    	// TODO - test to catch exception
+	    	if (pending == null) throw new IllegalStateException();
+	    	
+	    	// Remember, current points to the successor of 
+	        // pending, but if pending has two children, then
+	        // unlinkNode(pending) will copy the successor's data 
+	        // into pending and delete the successor node.
+	        // So in this case we want to end up with current
+	        // pointing to the pending node.
+	        if (pending.left != null && pending.right != null)
+	        {
+	          cursor = pending;
+	        }
+	        
+	        // TODO - this does not splay.  Test
+	        unlinkBST(pending);
+	        
+	        // TODO - test
+	        pending = null;
 	    }
 	}
 }

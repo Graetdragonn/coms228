@@ -17,7 +17,6 @@ import java.util.Scanner;
  */
 public class Transactions 
 {
-	
 	/**
 	 * The main method generates a simulation of rental and return activities.  
 	 *  
@@ -29,12 +28,14 @@ public class Transactions
 		// TODO 
 		// 
 		// 1. Construct a VideoStore object.
+		VideoStore vs = new VideoStore("small.txt");
+		
 		// 2. Simulate transactions as in the example given in Section 4 of the 
 		//    the project description. 
 		
 		// Read from the console
 		Scanner in = new Scanner(System.in);
-		String choice;
+		int choice;
 		
 		// Initial output to screen
 		System.out.println("Transactions at a Video Store");
@@ -47,25 +48,75 @@ public class Transactions
 		
 		while(true) {
 			// Get the next choice from the user
-			choice = in.next();
+			choice = in.nextInt();
 			
-			if (choice.equals("6")) {
+			String misc = in.nextLine();
+			
+			if (choice == 6) {
 				// User chose to exit
 				System.exit(0);
-			} else if (choice.equals("1")) {
+			} else if (choice == 1) {
 				// Rent
-			} else if (choice.equals("2")) {
+				System.out.print("Film to rent: ");
+				String line = in.nextLine();
+				
+				String title = vs.parseFilmName(line);
+				int copies = vs.parseNumCopies(line);
+				
+				try {
+					vs.videoRent(title, copies);
+				} catch (IllegalArgumentException e) {
+					System.out.println("Film " + title + " has an invalid request");
+				} catch (FilmNotInInventoryException e) {
+					System.out.println("Film " + title + " is not in inventory");
+				} catch (AllCopiesRentedOutException e) {
+					System.out.println("Film " + title + " has been rented out");
+				}
+			} else if (choice == 2) {
 				// Bulk rent
-			} else if (choice.equals("3")) {
+				System.out.print("Video file (rent): ");
+				String line = in.nextLine();
+				
+				try {
+					vs.bulkRent(line);
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			} else if (choice == 3) {
 				// Return 
-			} else if (choice.equals("4")) {
+				System.out.print("Film to return: ");
+				String line = in.nextLine();
+				
+				String title = vs.parseFilmName(line);
+				int copies = vs.parseNumCopies(line);
+				
+				try {
+					vs.videoReturn(title, copies);
+				} catch (IllegalArgumentException e) {
+					System.out.println("Film " + title + " has an invalid request");
+				} catch (FilmNotInInventoryException e) {
+					System.out.println("Film " + title + " is not in inventory");
+				} 				
+			} else if (choice == 4) {
 				// Bulk Return
-			} else if (choice.equals("5")) {
+				System.out.print("Video file (return): ");
+				String line = in.nextLine();
+				
+				try {
+					vs.bulkReturn(line);
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			} else if (choice == 5) {
 				// Summary
+				System.out.println(vs.transactionsSummary());
 			} else {
 				// Unknown choice
 				
 			}
+			
+			System.out.println();
+			System.out.print("Transaction: ");
 		}
 	}
 }
